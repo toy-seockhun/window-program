@@ -1,5 +1,6 @@
 ipch/
 *.aps
+*.db
 *.ncb
 *.opendb
 *.opensdf
