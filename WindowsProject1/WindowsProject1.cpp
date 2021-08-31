@@ -12,10 +12,11 @@ LRESULT CALLBACK WindowProcedure(HWND, UINT, WPARAM, LPARAM);
 
 void AddMenus(HWND);
 void AddControls(HWND);
+void loadImages();
 
-HWND hName, hAge, hOut;
+HWND hName, hAge, hOut, hLogo;
 HMENU hMenu;
-POINT p;
+HBITMAP hLogoImage, hGenerateImage;
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmdshow) {
 	WNDCLASSW wc = { 0 };
@@ -69,6 +70,7 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 		}
 		break; 
 	case WM_CREATE:
+		loadImages();
 		AddMenus(hWnd);
 		AddControls(hWnd);
 		break;
@@ -117,13 +119,25 @@ void AddControls(HWND hWnd) {
 		200, 90, 98, 38, hWnd,
 		NULL, NULL, NULL);
 
-	CreateWindowW(L"button", L"Generate",
-		WS_VISIBLE | WS_CHILD,
+	HWND hBut = CreateWindowW(L"button", NULL,
+		WS_VISIBLE | WS_CHILD | BS_BITMAP,
 		150, 140, 98, 38, hWnd,
 		(HMENU)GENERATE_BUTTON, NULL, NULL);
+	SendMessageW(hBut, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hGenerateImage);
 
 	hOut = CreateWindowW(L"edit", L"",
 		WS_VISIBLE | WS_CHILD | WS_BORDER,
 		100, 200, 300, 200, hWnd,
 		NULL, NULL, NULL);
+
+	hLogo = CreateWindowW(L"static", NULL,
+		WS_VISIBLE | WS_CHILD | SS_BITMAP,
+		350, 60, 100, 100, hWnd,
+		NULL, NULL, NULL);
+	SendMessageW(hLogo, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) hLogoImage);
+}
+
+void loadImages(){
+	hLogoImage = (HBITMAP)LoadImageW(NULL, L"blob640.bmp", IMAGE_BITMAP, 100, 100, LR_LOADFROMFILE);
+	hGenerateImage = (HBITMAP)LoadImageW(NULL, L"universe640.bmp", IMAGE_BITMAP, 98, 38, LR_LOADFROMFILE);
 }
