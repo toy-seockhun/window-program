@@ -44,11 +44,17 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmdsho
 
 LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 {
+	int val;
 	switch (msg) {
 	case WM_COMMAND:
 		switch (wp) {
 		case FILE_MENU_EXIT:
-			DestroyWindow(hWnd);
+			val = MessageBoxW(hWnd, L"Are you sure?", L"Wait!", MB_YESNO | MB_ICONEXCLAMATION);
+			if (val == IDYES)
+			{
+				DestroyWindow(hWnd);
+			}
+			// DestroyWindow(hWnd);
 			break;
 		case FILE_MENU_NEW:
 			MessageBeep(MB_ICONINFORMATION);
@@ -58,6 +64,20 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 
 			GetWindowText(hName, name, 30);
 			GetWindowText(hAge, age, 10);
+
+			if (wcscmp(name, L"") == 0 || wcscmp(age, L"") == 0) {
+				val = MessageBoxW(hWnd, L"You did not enter anything !", NULL, MB_ABORTRETRYIGNORE | MB_ICONERROR);
+				switch (val)
+				{
+				case IDABORT:
+					DestroyWindow(hWnd);
+					break;
+				case IDRETRY:
+					return 0;
+				case IDIGNORE:
+					break;
+				}
+;			}
 
 			wcscpy(out, name);
 			wcscat(out, L" is ");
@@ -122,7 +142,7 @@ void AddControls(HWND hWnd) {
 	HWND hBut = CreateWindowW(L"button", NULL,
 		WS_VISIBLE | WS_CHILD | BS_BITMAP,
 		150, 140, 98, 38, hWnd,
-		(HMENU)GENERATE_BUTTON, NULL, NULL);
+		(HMENU)GENERATE_BUTTON, NULL, NULL); 
 	SendMessageW(hBut, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hGenerateImage);
 
 	hOut = CreateWindowW(L"edit", L"",
