@@ -17,21 +17,6 @@ HWND hName, hAge, hOut;
 HMENU hMenu;
 POINT p;
 
-HHOOK _k_hook;
-LRESULT __stdcall k_Callback1(int nCode, WPARAM wParam, LPARAM lParam)
-{
-	PKBDLLHOOKSTRUCT key = (PKBDLLHOOKSTRUCT)lParam;
-	//a key was pressed
-	if (wParam == WM_KEYDOWN && nCode == HC_ACTION)
-	{
-		wchar_t res[30];
-		swprintf_s(res, L"0x%x pressed.", key->vkCode);
-		SetWindowText(hOut, res);
-	}
-
-	return CallNextHookEx(NULL, nCode, wParam, lParam);
-}
-
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmdshow) {
 	WNDCLASSW wc = { 0 };
 	wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
@@ -45,16 +30,13 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmdsho
 
 	CreateWindow(L"myWindowClass", L"My Window", WS_OVERLAPPEDWINDOW | WS_VISIBLE, 100, 100, 500, 500,
 		NULL, NULL, NULL, NULL);
-	
-	_k_hook = SetWindowsHookEx(WH_KEYBOARD_LL, k_Callback1, NULL, 0);
+
 	MSG msg = { 0 };
 
 	while ( GetMessage((&msg), NULL, NULL, NULL) ){
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
-	if (_k_hook)
-		UnhookWindowsHookEx(_k_hook);
 
 	return 0;
 }
